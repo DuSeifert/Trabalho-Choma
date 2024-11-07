@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/produtos")
+@RequestMapping("/tarefas")
 public class TarefaController {
 
     @Autowired
@@ -29,6 +29,23 @@ public class TarefaController {
         return tarefaService.save(tarefa);
     }
 
+    @DeleteMapping("/{id}")
+    public String deletar(@PathVariable int id){
+        Tarefa tarefa = tarefaService.findById(id);
+        tarefaService.delete(id);
+        return "Tarefa deletada com sucesso: \n" + tarefa.toString();
+    }
 
+    @PutMapping("/{id}/move")
+    public Tarefa update(@PathVariable int id){
+        tarefaService.moverColuna(id);
+        return tarefaService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public String edit(@PathVariable int id){
+        tarefaService.editarTarefa(id);
+        return "Tarefa editada com sucesso!: \n\n" + tarefaService.findById(id).toString();
+    }
 
 }
