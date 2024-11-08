@@ -1,10 +1,6 @@
 package com.mercado.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import org.antlr.v4.runtime.misc.NotNull;
+import jakarta.persistence.*;
 
 @Entity
 public class Tarefa {
@@ -13,8 +9,9 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @NotNull
+    @Column(nullable = false)
     private String titulo;
+
     private String descricao;
     private String data_criacao;
     private String status = "A fazer";
@@ -25,9 +22,7 @@ public class Tarefa {
             - A fazer
             - Em progresso
             - Concluído
-     */
 
-    /*
         Prioridades possiveis:
             - Baixa
             - Media
@@ -74,6 +69,10 @@ public class Tarefa {
 
     public void setPrioridade(String prioridade) {
         this.prioridade = prioridade;
+    }
+
+    public void setData_criacao(String data_criacao) {
+        this.data_criacao = data_criacao;
     }
 
     //método toString()

@@ -24,6 +24,11 @@ public class TarefaController {
         return tarefaService.findById(id);
     }
 
+    @GetMapping("/filter/{stat}")
+    public List<Tarefa> listarPorStatus(@PathVariable int stat){
+        return tarefaService.findByStatus(stat);
+    }
+
     @PostMapping
     public Tarefa add(@RequestBody Tarefa tarefa){
         return tarefaService.save(tarefa);
@@ -33,7 +38,7 @@ public class TarefaController {
     public String deletar(@PathVariable int id){
         Tarefa tarefa = tarefaService.findById(id);
         tarefaService.delete(id);
-        return "Tarefa deletada com sucesso: \n" + tarefa.toString();
+        return "Tarefa deletada com sucesso: \n\n" + tarefa.toString();
     }
 
     @PutMapping("/{id}/move")
@@ -43,9 +48,8 @@ public class TarefaController {
     }
 
     @PutMapping("/{id}")
-    public String edit(@PathVariable int id){
-        tarefaService.editarTarefa(id);
-        return "Tarefa editada com sucesso!: \n\n" + tarefaService.findById(id).toString();
+    public Tarefa edit(@PathVariable int id, @RequestBody Tarefa tarefa){
+        return tarefaService.editarTarefa(id, tarefa);
     }
 
 }

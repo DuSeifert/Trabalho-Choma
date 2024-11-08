@@ -5,8 +5,8 @@ import com.mercado.demo.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 @Service
 public class TarefaService {
@@ -20,6 +20,37 @@ public class TarefaService {
 
     public Tarefa findById(int id) {
         return tarefaRepository.findById(id).orElse(null);
+    }
+
+    public List<Tarefa> findByStatus(int n_stat) {
+        List<Tarefa> listaTarefa = tarefaRepository.findAll();
+        List<Tarefa> TarefaPorStatus = new ArrayList<>();
+
+        String stat = switch (n_stat) {
+            case 1 -> "A fazer";
+            case 2 -> "Em progresso";
+            case 3 -> "Concluido";
+            default -> "";
+        };
+
+        String[] prioridade = {"Baixa", "Media", "Alta"};
+        int i = 0;
+
+        while(i <= 2){
+
+            for (Tarefa tarefa : listaTarefa) {
+                if(tarefa.getStatus().equals(stat) && tarefa.getPrioridade().equals(prioridade[i])) {
+                    TarefaPorStatus.add(tarefa);
+                }
+            }
+            i++;
+        }
+
+        if(TarefaPorStatus.isEmpty()) {
+            return null;
+        }
+
+        return TarefaPorStatus;
     }
 
     public Tarefa save(Tarefa tarefa) {
@@ -44,52 +75,34 @@ public class TarefaService {
                     tarefaRepository.save(tarefa);
                 }
                 case "Em progresso" -> {
-                    tarefa.setStatus("Concluído");
+                    tarefa.setStatus("Concluido");
                     System.out.println("Status da tarefa "+id+" alterado para: " + tarefa.getStatus());
                     tarefaRepository.save(tarefa);
                 }
-                default -> {
-                    System.out.println("Status da tarefa "+id+" já está Concluído");
-                }
+                default -> System.out.println("Status da tarefa "+id+" já está Concluido");
             }
         }
     }
 
-    public void editarTarefa(int id){
-        Scanner sc = new Scanner(System.in);
+    public Tarefa editarTarefa(int id, Tarefa newStuff){
         Tarefa tarefa = tarefaRepository.findById(id).orElse(null);
         if (tarefa == null){
             throw new RuntimeException("Tarefa não encontrada");
         }
         else{
-            System.out.println(tarefa.toString());
-
-            System.out.println("\nNovo Título: ");
-            tarefa.setTitulo(sc.nextLine());
-
-            System.out.println("\nNova Descrição: ");
-            tarefa.setDescricao(sc.nextLine());
-
-            int op;
-            System.out.println("\nNova Prioridade:\n  1 -- Baixa\n  2 -- Media\n  3 -- Alta");
-            do{
-                op = sc.nextInt();
-                sc.nextLine();
-            }while(op < 1 || op > 3);
-
-            switch (op){
-                case 1:
-                    tarefa.setPrioridade("Baixa");
-                    break;
-                case 2:
-                    tarefa.setPrioridade("Media");
-                    break;
-                case 3:
-                    tarefa.setPrioridade("Alta");
+            if(newStuff.getTitulo() != null){
+                tarefa.setTitulo(newStuff.getTitulo());
             }
-
-            System.out.println("\nNova tarefa editada: \n" + tarefa.toString());
-            tarefaRepository.save(tarefa);
+            if(newStuff.getDescricao() != null){
+                tarefa.setDescricao(newStuff.getDescricao());
+            }
+            if(newStuff.getPrioridade() != null){
+                tarefa.setPrioridade(newStuff.getPrioridade());
+            }
+            if(newStuff.getData_criacao() != null) {
+                tarefa.setData_criacao(newStuff.getData_criacao());
+            }
+            return tarefaRepository.save(tarefa);
         }
     }
 
